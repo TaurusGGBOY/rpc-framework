@@ -11,12 +11,25 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <spring.version>5.2.7.RELEASE</spring.version>
+        <slf4j.version>1.7.25</slf4j.version>
     </properties>
 
     <modules>
         <module>rpc-framework-ggb</module>
+        <module>rpc-frame-common</module>
     </modules>
     <dependencies>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.8</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
     </dependencies>
 </project>

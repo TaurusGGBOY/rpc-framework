@@ -16,3 +16,45 @@
 + CGLIB动态代理：继承Callback 实现intercept，getPxoxy中Enhancer 设置类加载器，被代理类，方法拦截器，create()创建
 + CGLIB：生成一个被代理类的子类 不能代理生命为final的 如String
 + 动态代理：不需要手动实现接口 不需要增加方法就重写 JVM运行时动态生成的字节码
+
+## 写的流程
+  + 从上往下
+  + RpcRequestTransport
+  + RpcMessage RpcRequest RpcResponse
+  + ServiceProvider ZkServiceProviderImpl
+  + RpcServiceConfigd等
+
+## 知识点
+  + 如何注册一个注解
+    + 在同一个package下创建`public @interface SPI`
+  + maven项目在调用其他module包的时候要在当前module的pom.xml下添加dependency
+
+## 遇到的问题
+
++ @SPI注解没有生效
+  + 需要自己去定义这个注解 放在common库里
++ 注解的作用
+  + 告诉编译器某些事情
+  + 比如@override 不运行
++ @Target(ElementType.TYPE)
+    + 说明是一个type 可以修饰 类 接口 或者 枚举？
++ @Decumented作用
+    + 生成javadoc的时候会显示
++ @Retention(RetentionPolicy.RUNTIME)
+    + 生命周期：注解在保存到class文件中，jvm加载class文件之后，仍然存在
+    + 作用：生命周期为运行时
++ dto啥意思
++ @Builder注解是干啥的
+  + 生成了一个builder类 里面有个本对象 里面有各个方法的赋值方法
+  + people.builder().name("aaa").id("bbb") 然后可以流式执行
++ @ToString注解输出是什么
++ 实现Serializable要做什么 
++ enum啥情况为啥能在里面定义成员变量的
++ @Slf4j有什么用
++ @Component有什么用
++ getCanonicalName
++ class.cast
++ computeIfAbsent
++ getDeclaredConstructor
++ InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException 为什么是这几个错
++ publish和add啥区别？
