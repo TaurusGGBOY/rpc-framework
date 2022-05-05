@@ -15,6 +15,7 @@ public class SingletonFactory {
             throw new IllegalArgumentException();
         }
         String key = c.toString();
+        // 类.转换（对象）=类型为T的实例
         if (OBJECT_MAP.containsKey(key)) {
             return c.cast(OBJECT_MAP.get(key));
         }else{

@@ -58,3 +58,8 @@
 + getDeclaredConstructor
 + InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException 为什么是这几个错
 + publish和add啥区别？
++ 模板 T ? S
+
+- Holder是干啥的
+- ExtensionLoader是类加载器里面的第三类加载器？
+- try后面的括号：自动释放 但是为什么知道会自动的close？

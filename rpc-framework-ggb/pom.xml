@@ -17,6 +17,11 @@
             <version>${spring.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
             <groupId>github.rpc</groupId>
             <artifactId>rpc_frame_common</artifactId>
             <version>1.0-SNAPSHOT</version>
