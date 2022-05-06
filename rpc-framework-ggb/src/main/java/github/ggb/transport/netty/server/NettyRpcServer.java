@@ -1,9 +1,11 @@
 package github.ggb.transport.netty.server;
 
+import github.ggb.config.CustomShutdownHook;
 import github.ggb.config.RpcServiceConfig;
 import github.ggb.factory.SingletonFactory;
 import github.ggb.provider.Impl.ZkServiceProviderImpl;
 import github.ggb.provider.ServiceProvider;
+import github.ggb.utils.RuntimeUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -31,30 +33,47 @@ public class NettyRpcServer {
     // TODO 这个注解是干啥的
     @SneakyThrows
     public void start() {
-        CustomShutdownHook.get;
+        CustomShutdownHook.getCustomShutdownHook().clearAll();
         String host = InetAddress.getLocalHost().getHostAddress();
         // 这里需要添加netty的maven依赖
         // boss一个线程nio监听就完事了
         // TODO worker无限？
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workGroup = new NioEventLoopGroup();
-        DefaultEventExecutorGroup serviceHandlerGroup = new DefaultEventExecutorGroup(RuntimeUtil.cpu(), Threadpoolutil);
+        // 线程数就是cpu数 加一个工厂
+        DefaultEventExecutorGroup serviceHandlerGroup = new DefaultEventExecutorGroup(RuntimeUtil.cpus(), Threadpoolutil);
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workGroup)
+                    // TODO channel 是什么？
                     .channel(NioServerSocketChannel.class)
+                    // TODO 这个是啥？
                     .childOption(ChannelOption.TCP_NODELAY, true)
+                    // 心跳
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    // 全连接队列？
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .handler(new LoggingHandler(Loglevel_INFO))
+                    // TODO 为什么是child
+                    // 这个强制类型转换也迷
                     .childHandler((ChannelInitializer) (ch) -> {
                        ChannelPipeline p  =  ch.pipeline();
+                       // TODO 这个是啥来着……
+                        // encode和decode
                         p.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
                                 .addLast(new RpcMessageEncoder())
                                 .addLast(new RpcMessageDecoder())
+                                 // 监听channel？
                                 .addLast(serviceHandlerGroup, new NettyRpcServerHandler());
                     });
+            // 绑定  这里本来是个异步 但是这里sync了
+            // 这里是要await的？
+            // 开始事件循环了吗？ 没有开启事件循环
             ChannelFuture f = b.bind(host, PORT).sync();
+            // TODO 关闭？
+            // f.channel是获取channel的
+            // closeFuture
+            // 懂了…… 监听channel的close消息
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             log.error("start server error", e);
