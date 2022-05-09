@@ -19,6 +19,7 @@ public class RpcRequest  implements Serializable {
     private String methodName;
     // 参数
     private Object[] parameters;
+    private Class<?>[] paramTypes;
     // 要求同一个version吗
     private String version;
     // ??? 要求同一个group？

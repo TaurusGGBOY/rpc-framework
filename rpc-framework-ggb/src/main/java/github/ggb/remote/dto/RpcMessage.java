@@ -1,4 +1,4 @@
-package github.ggb.dto;
+package github.ggb.remote.dto;
 
 import lombok.*;
 

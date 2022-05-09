@@ -1,4 +1,4 @@
-package github.ggb.dto;
+package github.ggb.remote.dto;
 
 import github.ggb.enums.RpcResponseCodeEnum;
 import lombok.*;
@@ -31,4 +31,12 @@ public class RpcResponse<T> implements Serializable {
         return response;
     }
 
+
+    public static <T> RpcResponse<T> fail(RpcResponseCodeEnum rpcResponseCodeEnum) {
+        RpcResponse<T> response = new RpcResponse<>();
+        response.setCode(rpcResponseCodeEnum.getCode());
+        response.setMessage(rpcResponseCodeEnum.getMessage());
+        // TODO 为什么失败 不设置requestID？
+        return response;
+    }
 }
