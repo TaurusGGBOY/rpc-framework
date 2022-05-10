@@ -5,11 +5,16 @@ import github.ggb.config.RpcServiceConfig;
 import github.ggb.factory.SingletonFactory;
 import github.ggb.provider.Impl.ZkServiceProviderImpl;
 import github.ggb.provider.ServiceProvider;
+import github.ggb.transport.netty.codec.RpcMessageDecoder;
+import github.ggb.transport.netty.codec.RpcMessageEncoder;
 import github.ggb.utils.RuntimeUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import lombok.SneakyThrows;
@@ -53,18 +58,21 @@ public class NettyRpcServer {
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     // 全连接队列？
                     .option(ChannelOption.SO_BACKLOG, 128)
-                    .handler(new LoggingHandler(Loglevel_INFO))
+                    .handler(new LoggingHandler(LogLevel.INFO))
                     // TODO 为什么是child
                     // 这个强制类型转换也迷
-                    .childHandler((ChannelInitializer) (ch) -> {
-                       ChannelPipeline p  =  ch.pipeline();
-                       // TODO 这个是啥来着……
-                        // encode和decode
-                        p.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
-                                .addLast(new RpcMessageEncoder())
-                                .addLast(new RpcMessageDecoder())
-                                 // 监听channel？
-                                .addLast(serviceHandlerGroup, new NettyRpcServerHandler());
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ChannelPipeline p = ch.pipeline();
+                            // TODO 这个是啥来着……
+                            // encode和decode
+                            p.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
+                                    .addLast(new RpcMessageEncoder())
+                                    .addLast(new RpcMessageDecoder())
+                                    // 监听channel？
+                                    .addLast(serviceHandlerGroup, new NettyRpcServerHandler());
+                        }
                     });
             // 绑定  这里本来是个异步 但是这里sync了
             // 这里是要await的？
