@@ -1,6 +1,6 @@
 package github.ggb.config;
 
-import github.ggb.transport.netty.server.NettyRpcServer;
+import github.ggb.remote.transport.netty.server.NettyRpcServer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;

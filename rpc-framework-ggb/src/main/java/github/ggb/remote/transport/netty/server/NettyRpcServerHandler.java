@@ -1,4 +1,4 @@
-package github.ggb.transport.netty.server;
+package github.ggb.remote.transport.netty.server;
 
 import github.ggb.enums.CompressTypeEnum;
 import github.ggb.enums.RpcResponseCodeEnum;

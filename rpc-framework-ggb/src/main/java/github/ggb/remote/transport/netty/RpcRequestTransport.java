@@ -1,4 +1,4 @@
-package github.ggb.remote;
+package github.ggb.remote.transport.netty;
 
 import github.ggb.extension.SPI;
 import github.ggb.remote.dto.RpcRequest;

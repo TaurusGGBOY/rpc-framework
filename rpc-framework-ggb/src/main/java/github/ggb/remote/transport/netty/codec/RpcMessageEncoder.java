@@ -1,10 +1,12 @@
-package github.ggb.transport.netty.codec;
+package github.ggb.remote.transport.netty.codec;
 
+import github.ggb.compress.Compress;
 import github.ggb.enums.CompressTypeEnum;
 import github.ggb.enums.SerializationTypeEnum;
 import github.ggb.extension.ExtensionLoader;
 import github.ggb.remote.Constants.RpcConstants;
 import github.ggb.remote.dto.RpcMessage;
+import github.ggb.serialize.Serializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -23,7 +25,7 @@ public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
     protected void encode(ChannelHandlerContext ctx, RpcMessage rpcMessage, ByteBuf out) throws Exception {
         try {
             out.writeBytes(RpcConstants.MAGIC_NUMBER);
-            out.writeBytes(RpcConstants.VERSION);
+            out.writeByte(RpcConstants.VERSION);
             out.writerIndex(out.writerIndex() + 4);
             byte messageType = rpcMessage.getMessageType();
             out.writeByte(messageType);

@@ -1,4 +1,4 @@
-package github.ggb.transport.netty.codec;
+package github.ggb.remote.transport.netty.codec;
 
 import github.ggb.enums.CompressTypeEnum;
 import github.ggb.enums.SerializationTypeEnum;
