@@ -17,7 +17,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class ExtensionLoader<T> {
     // 看了下 要动态加载的类放在这个目录下 emmm 但是看了下 里面只是保存了一个路径 真正的内容还是在路径所在的java文件夹
     // 那这么搞意义是啥……
-    private static final String SERVICE_DIRECTORY = "META-INF/extensions";
+    private static final String SERVICE_DIRECTORY = "META-INF/extensions/";
     // 需要注意的是 在java中 List<Integer> List<Long>是不同的类 但是在某些语言是同一个类
     // 这里直接用类对象做key，然后value是它的加载器
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<>();
@@ -66,7 +66,7 @@ public class ExtensionLoader<T> {
     public T createExtension(String name) {
         Class<?> clazz = getExtensionClasses().get(name);
         if (null == clazz) {
-            throw new RuntimeException("No such extension of name" + name);
+            throw new RuntimeException("No such extension of name " + name);
         }
         T instance = (T) EXTENSION_INSTANCES.get(clazz);
         if (null == instance) {

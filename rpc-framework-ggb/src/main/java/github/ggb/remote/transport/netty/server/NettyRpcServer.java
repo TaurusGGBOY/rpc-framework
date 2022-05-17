@@ -8,6 +8,7 @@ import github.ggb.provider.ServiceProvider;
 import github.ggb.remote.transport.netty.codec.RpcMessageDecoder;
 import github.ggb.remote.transport.netty.codec.RpcMessageEncoder;
 import github.ggb.utils.RuntimeUtil;
+import github.ggb.utils.concurrent.threadpool.ThreadPoolFactoryUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -46,7 +47,7 @@ public class NettyRpcServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workGroup = new NioEventLoopGroup();
         // 线程数就是cpu数 加一个工厂
-        DefaultEventExecutorGroup serviceHandlerGroup = new DefaultEventExecutorGroup(RuntimeUtil.cpus(), Threadpoolutil);
+        DefaultEventExecutorGroup serviceHandlerGroup = new DefaultEventExecutorGroup(RuntimeUtil.cpus(), ThreadPoolFactoryUtil.createThreadFactory("service-handler-group", false));
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workGroup)

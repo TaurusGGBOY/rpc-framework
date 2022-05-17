@@ -1,6 +1,8 @@
 package github.ggb.config;
 
+import github.ggb.registry.zk.util.CuratorUtils;
 import github.ggb.remote.transport.netty.server.NettyRpcServer;
+import github.ggb.utils.concurrent.threadpool.ThreadPoolFactoryUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -20,11 +22,11 @@ public class CustomShutdownHook {
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), NettyRpcServer.PORT);
-                CuratorUtils.clear();
+                CuratorUtils.clearRegistry(CuratorUtils.getZkClient(), inetSocketAddress);
             } catch (UnknownHostException ignored) {
 
             }
-            ThreadPoolFactoryUtil.shutdownAllThreadPool();
+            ThreadPoolFactoryUtil.shutDownAllThreadPool();
         }));
     }
 }

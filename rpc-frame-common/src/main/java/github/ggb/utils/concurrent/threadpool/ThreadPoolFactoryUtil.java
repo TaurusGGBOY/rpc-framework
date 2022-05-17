@@ -57,7 +57,7 @@ public class ThreadPoolFactoryUtil {
         return new ThreadPoolExecutor(customThreadPoolConfig.getCorePoolSize(), customThreadPoolConfig.getMaximumPoolSize(), customThreadPoolConfig.getKeepAliveTime(), customThreadPoolConfig.getUnit(), customThreadPoolConfig.getWorkQueue(), threadFactory);
     }
 
-    private static ThreadFactory createThreadFactory(String threadNamePrefix, boolean daemon) {
+    public static ThreadFactory createThreadFactory(String threadNamePrefix, boolean daemon) {
         if (threadNamePrefix == null) {
             return Executors.defaultThreadFactory();
         }

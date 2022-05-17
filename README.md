@@ -1,5 +1,13 @@
 # 从零开始手把手实现RPC框架
 
+# windows下运行
+
+- https://docs.docker.com/desktop/windows/install/ 下载docker
+- 安装docker
+- wsl --update
+- docker pull zookeeper:3.5.8
+- docker run -d --name zookeeper -p 2181:2181 zookeeper:3.5.8
+
 ## 文档
 
 + 为什么要RPC：服务提供的方法不在同一个内存空间，需要网络编程
