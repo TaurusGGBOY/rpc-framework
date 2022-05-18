@@ -24,6 +24,9 @@
     <modules>
         <module>rpc-framework-ggb</module>
         <module>rpc-frame-common</module>
+        <module>hello-service-api</module>
+        <module>example-server</module>
+        <module>example-client</module>
     </modules>
     <dependencies>
         <dependency>

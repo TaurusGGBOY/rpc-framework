@@ -8,24 +8,27 @@ import github.ggb.factory.SingletonFactory;
 import github.ggb.provider.Impl.ZkServiceProviderImpl;
 import github.ggb.provider.ServiceProvider;
 import github.ggb.proxy.RpcClientProxy;
-import github.ggb.remote.RpcRequestTransport;
-import github.ggb.remote.dto.RpcRequest;
+import github.ggb.remoting.transport.RpcRequestTransport;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
 @Slf4j
+@Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
     private final ServiceProvider serviceProvider;
     private final RpcRequestTransport rpcClient;
 
-    public SpringBeanPostProcessor(ServiceProvider serviceProvider, RpcRequestTransport rpcClient) {
+    public SpringBeanPostProcessor() {
         this.serviceProvider = SingletonFactory.getInstance(ZkServiceProviderImpl.class);
         this.rpcClient = ExtensionLoader.getExtensionLoader(RpcRequestTransport.class).getExtension("netty");
     }
 
+    @SneakyThrows
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (!bean.getClass().isAnnotationPresent(RpcService.class)) {

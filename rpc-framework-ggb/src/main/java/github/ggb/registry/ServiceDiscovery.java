@@ -1,7 +1,7 @@
 package github.ggb.registry;
 
 import github.ggb.extension.SPI;
-import github.ggb.remote.dto.RpcRequest;
+import github.ggb.remoting.dto.RpcRequest;
 
 import java.net.InetSocketAddress;
 

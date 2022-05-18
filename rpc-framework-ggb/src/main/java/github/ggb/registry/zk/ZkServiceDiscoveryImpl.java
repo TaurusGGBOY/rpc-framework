@@ -6,7 +6,7 @@ import github.ggb.extension.ExtensionLoader;
 import github.ggb.loadbalance.LoadBalance;
 import github.ggb.registry.ServiceDiscovery;
 import github.ggb.registry.zk.util.CuratorUtils;
-import github.ggb.remote.dto.RpcRequest;
+import github.ggb.remoting.dto.RpcRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 

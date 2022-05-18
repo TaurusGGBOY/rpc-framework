@@ -6,10 +6,9 @@ import github.ggb.exception.RpcException;
 import github.ggb.extension.ExtensionLoader;
 import github.ggb.provider.ServiceProvider;
 import github.ggb.registry.ServiceRegistry;
-import github.ggb.remote.server.NettyRpcServer;
+import github.ggb.remoting.transport.netty.server.NettyRpcServer;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -64,7 +63,7 @@ public class ZkServiceProviderImpl implements ServiceProvider {
             this.addService(rpcServiceConfig);
             serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, NettyRpcServer.PORT));
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            log.error("occur exception when getHostAddress", e);
         }
     }
 }

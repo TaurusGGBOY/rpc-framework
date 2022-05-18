@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 // 是否允许继承
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD})
 @Inherited
 public @interface RpcReference {
 

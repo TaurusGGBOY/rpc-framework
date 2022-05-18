@@ -1,7 +1,7 @@
 package github.ggb.config;
 
 import github.ggb.registry.zk.util.CuratorUtils;
-import github.ggb.remote.transport.netty.server.NettyRpcServer;
+import github.ggb.remoting.transport.netty.server.NettyRpcServer;
 import github.ggb.utils.concurrent.threadpool.ThreadPoolFactoryUtil;
 import lombok.extern.slf4j.Slf4j;
 

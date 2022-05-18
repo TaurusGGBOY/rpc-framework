@@ -5,7 +5,7 @@ import github.ggb.DemoRpcServiceImpl;
 import github.ggb.config.RpcServiceConfig;
 import github.ggb.registry.zk.ZkServiceDiscoveryImpl;
 import github.ggb.registry.zk.ZkServiceRegistryImpl;
-import github.ggb.remote.dto.RpcRequest;
+import github.ggb.remoting.dto.RpcRequest;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;

@@ -1,7 +1,7 @@
 package github.ggb.loadbalance.loadbalancer;
 
 import github.ggb.loadbalance.AbstractLoadBalance;
-import github.ggb.remote.dto.RpcRequest;
+import github.ggb.remoting.dto.RpcRequest;
 
 import java.util.List;
 import java.util.Random;
