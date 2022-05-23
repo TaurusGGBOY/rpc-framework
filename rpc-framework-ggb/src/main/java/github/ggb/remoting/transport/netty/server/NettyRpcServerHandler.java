@@ -18,8 +18,10 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+// 核心就是这个函数 如何处理Netty过来的消息
 public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     private final RpcRequestHandler rpcRequestHandler;
+    // 没有上下文 所以直接单例就行
     public NettyRpcServerHandler() {
         // 这是个线程安全的单例
         this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
@@ -33,10 +35,11 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    // 事件来了 如果是读空闲事件 就要关闭链接咯！
+    // 主要就是读写事件 还有第一个事件等特殊事件
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
-            // TODO 为啥空闲了就可以close了
             if (IdleState.READER_IDLE == state) {
                 log.info("Idle check happen, so close the connection");
                 ctx.close();
@@ -47,6 +50,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    // 读事件来了 开读
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
             if (!(msg instanceof RpcMessage)) {
@@ -59,13 +63,15 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
             rpcMessage.setCodec(SerializationTypeEnum.HESSIAN.getCode());
             // 压缩用GZIP
             rpcMessage.setCompress(CompressTypeEnum.GZIP.getCode());
+            // 特判心跳 这个心跳和netty级别的心跳不一样 这个是服务级别的心跳
             // 如果是ping 返回pong
             if (messageType == RpcConstants.HEARTBEAT_REQUEST_TYPE) {
                 rpcMessage.setMessageType(RpcConstants.HEARTBEAT_RESPONSE_TYPE);
                 rpcMessage.setData(RpcConstants.PONG);
             }else{
-                // 否则就要handler去处理了
+                // 如果是pong 说明服务还在可用状态
                 RpcRequest rpcRequest = (RpcRequest) ((RpcMessage) msg).getData();
+                // 重点就是这个handle了
                 Object result = rpcRequestHandler.handle(rpcRequest);
                 log.info(String.format("server get result %s", result.toString()));
                 rpcMessage.setMessageType(RpcConstants.RESPONSE_TYPE);
@@ -83,7 +89,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
             // 写并且刷新rpcMesssage
             ctx.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
         }finally {
-            // TODO 这个是干什么的
+            // 从inbound中读取的bytebuf需要手动释放 用的引用计数
             ReferenceCountUtil.release(msg);
         }
     }

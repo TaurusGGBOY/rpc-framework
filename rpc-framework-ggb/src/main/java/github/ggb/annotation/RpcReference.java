@@ -9,6 +9,8 @@ import java.lang.annotation.*;
 // 是否允许继承
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
+// 比如就用来修饰了声明的RpcService rpcService 指定查找
+// 查找的对象是 RpcService这种
 @Target({ElementType.FIELD})
 @Inherited
 public @interface RpcReference {

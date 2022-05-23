@@ -26,6 +26,7 @@ public class ThreadPoolFactoryUtil {
     }
 
     private static ExecutorService createCustomThreadPoolIfAbsent(CustomThreadPoolConfig customThreadPoolConfig, String threadNamePrefix, boolean daemon) {
+        // put的话 会覆盖掉 但是我们的预期是不覆盖
         ExecutorService threadPool = THREAD_POOLS.computeIfAbsent(threadNamePrefix, k -> createThreadPool(customThreadPoolConfig, threadNamePrefix, daemon));
         if (threadPool.isShutdown() || threadPool.isTerminated()) {
             THREAD_POOLS.remove(threadNamePrefix);

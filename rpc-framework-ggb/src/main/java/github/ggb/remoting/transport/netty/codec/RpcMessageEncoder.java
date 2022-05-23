@@ -46,6 +46,8 @@ public class RpcMessageEncoder extends MessageToByteEncoder<RpcMessage> {
             if (null != bodyBytes) {
                 out.writeBytes(bodyBytes);
             }
+            // 为啥要这么干啊……
+            // 直接先写fullLength再写bytes不行吗
             int writeIndex = out.writerIndex();
             out.writerIndex(writeIndex - fullLength + RpcConstants.MAGIC_NUMBER.length + 1);
             out.writeInt(fullLength);

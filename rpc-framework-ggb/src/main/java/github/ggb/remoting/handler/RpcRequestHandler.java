@@ -19,13 +19,16 @@ public class RpcRequestHandler {
     }
 
     public Object handle(RpcRequest rpcRequest) {
+        // 首先从请求中获取service的名字
         Object service = serviceProvider.getService(rpcRequest.getRpcServiceName());
+        // 然后调用请求 并返回结果
         return invokeTargetMethod(rpcRequest, service);
     }
 
     private Object invokeTargetMethod(RpcRequest rpcRequest, Object service) {
         Object result;
         try {
+            // 反射通过方法加参数 获得唯一方法
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
             result = method.invoke(service, rpcRequest.getParameters());
             log.info("service:[{}] successful invoke method:[{}]", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());

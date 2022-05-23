@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
+// TODO 2022.5.23
 public class ChannelProvider {
-    // TODO 这啥?
+    // 每个地址设置一个channel
     private final Map<String, Channel> channelMap;
 
     public ChannelProvider() {

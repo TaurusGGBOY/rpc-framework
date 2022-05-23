@@ -27,6 +27,7 @@ public class HessianSerializer implements Serializer {
             // import here
             HessianInput hessianInput = new HessianInput(byteArrayInputStream);
             Object o = hessianInput.readObject();
+            // clazz对象+Object就可以转换了……
             return clazz.cast(o);
         } catch (Exception e) {
             throw new SerializeException("deserialization failed");

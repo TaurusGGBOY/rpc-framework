@@ -20,15 +20,13 @@ public class ZkServiceProviderImpl implements ServiceProvider {
 
     // 服务就是一个object？
     private final Map<String, Object> serviceMap;
-    // 保存已经注册的服务
-    private final Set<String> registeredService;
     //服务注册机构
     private final ServiceRegistry serviceRegistry;
 
     public ZkServiceProviderImpl() {
         serviceMap = new ConcurrentHashMap<>();
-        registeredService = ConcurrentHashMap.newKeySet();
         // 用动态加载加载zk获取一个实例
+//        这个动态加载有什么说法？ 一定要动态加载吗
         serviceRegistry = ExtensionLoader.getExtensionLoader(ServiceRegistry.class).getExtension("zk");
     }
 
@@ -36,10 +34,9 @@ public class ZkServiceProviderImpl implements ServiceProvider {
     @Override
     public void addService(RpcServiceConfig rpcServiceConfig) {
         String rpcServiceName = rpcServiceConfig.getRpcServiceName();
-        if (registeredService.contains(rpcServiceName)) {
+        if (serviceMap.containsKey(rpcServiceName)) {
             return;
         }
-        registeredService.add(rpcServiceName);
         serviceMap.put(rpcServiceName, rpcServiceConfig.getService());
         log.info("add service:{} and interfaces:{}", rpcServiceName, rpcServiceConfig.getService().getClass().getInterfaces());
     }
@@ -60,7 +57,9 @@ public class ZkServiceProviderImpl implements ServiceProvider {
         String host = null;
         try {
             host = InetAddress.getLocalHost().getHostAddress();
+            // 本地修改
             this.addService(rpcServiceConfig);
+            // 在zk上注册服务
             serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, NettyRpcServer.PORT));
         } catch (UnknownHostException e) {
             log.error("occur exception when getHostAddress", e);
