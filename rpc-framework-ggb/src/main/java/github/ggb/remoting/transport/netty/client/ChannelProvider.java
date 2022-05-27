@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-// TODO 2022.5.23
 public class ChannelProvider {
     // 每个地址设置一个channel
     private final Map<String, Channel> channelMap;
@@ -17,6 +16,7 @@ public class ChannelProvider {
         channelMap = new ConcurrentHashMap<>();
     }
 
+    // 每个地址存了一个channel 所以是按照hostname port ip三元组确定是不是同一个连接
     public Channel get(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
         if (!channelMap.containsKey(key)) {
@@ -38,6 +38,6 @@ public class ChannelProvider {
     public void remove(InetSocketAddress inetSocketAddress) {
         String key = inetSocketAddress.toString();
         channelMap.remove(key);
-        log.info("channel map size :[{}]", channelMap.size());
+        log.info("after remove channel map size :[{}]", channelMap.size());
     }
 }

@@ -38,10 +38,12 @@ public final class NettyRpcClient implements RpcRequestTransport {
 
     public NettyRpcClient() {
         eventLoopGroup = new NioEventLoopGroup();
+        // nio 用
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))
+                // 5s断线就丢掉
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -53,12 +55,13 @@ public final class NettyRpcClient implements RpcRequestTransport {
                                 .addLast(new NettyRpcClientHandler());
                     }
                 });
+        // 服务发现是zk
         this.serviceDiscovery = ExtensionLoader.getExtensionLoader(ServiceDiscovery.class).getExtension("zk");
         this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+        // 一个inetAddress对应一个channel
         this.channelProvider = SingletonFactory.getInstance(ChannelProvider.class);
     }
 
-    // TODO 这个
     @SneakyThrows
     public Channel doConnect(InetSocketAddress inetSocketAddress) {
         CompletableFuture<Channel> completableFuture = new CompletableFuture<>();
@@ -69,22 +72,27 @@ public final class NettyRpcClient implements RpcRequestTransport {
             log.info("the client has connected [{}] successful!", inetSocketAddress.toString());
             completableFuture.complete(future.channel());
         });
+        // 成功在这
+        // 但是必须这么写吗……
         return completableFuture.get();
     }
 
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
+        // 先在zk上查了再看发不发
         InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest);
         Channel channel = getChannel(inetSocketAddress);
         if (!channel.isActive()) {
             throw new IllegalStateException();
         }
+        // 可以的 单例其他地方会用到
         unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
         RpcMessage rpcMessage = RpcMessage.builder().data(rpcRequest)
                 .codec(SerializationTypeEnum.HESSIAN.getCode())
                 .compress(CompressTypeEnum.GZIP.getCode())
                 .messageType(RpcConstants.REQUEST_TYPE).build();
+        // 这里不阻塞
         channel.writeAndFlush(rpcMessage).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 log.info("client and message:[{}]", rpcMessage);

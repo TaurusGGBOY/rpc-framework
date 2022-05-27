@@ -44,6 +44,11 @@ public class ZkServiceProviderImpl implements ServiceProvider {
     // 为什么这里不用管线程安全问题……
     @Override
     public Object getService(String rpcServiceName) {
+        // 拿服务只能本地拿？
+        // 服务发现咋做的……
+        // zk上注册的新服务发现不了
+        // 这个地方有问题 如果本地没有要去zk上拿 然后才能确定没有这个服务
+        // 前面结束的时候会删除所有服务……所以 行吧
         Object service = serviceMap.get(rpcServiceName);
         if (null == service) {
             throw new RpcException(RpcErrorMessageEnum.SERVICE_CAN_NOT_BE_FOUND);
@@ -60,6 +65,7 @@ public class ZkServiceProviderImpl implements ServiceProvider {
             // 本地修改
             this.addService(rpcServiceConfig);
             // 在zk上注册服务
+            // 使用的curator 但是监听的时候没有更新到本地的服务列表中
             serviceRegistry.registerService(rpcServiceConfig.getRpcServiceName(), new InetSocketAddress(host, NettyRpcServer.PORT));
         } catch (UnknownHostException e) {
             log.error("occur exception when getHostAddress", e);

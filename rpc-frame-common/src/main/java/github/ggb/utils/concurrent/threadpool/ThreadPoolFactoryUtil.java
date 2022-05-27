@@ -38,11 +38,9 @@ public class ThreadPoolFactoryUtil {
 
     public static void shutDownAllThreadPool() {
         log.info("call shutdownallThreadpool method");
-        // TODO 这个好
         THREAD_POOLS.entrySet().parallelStream().forEach(entry->{
             ExecutorService executorService = entry.getValue();
             executorService.shutdown();
-            // TODO 这个标记是什么情况
             log.info("shut down thread pool[{}] [{}]", entry.getKey(), executorService.isTerminated());
             try {
                 executorService.awaitTermination(10, TimeUnit.SECONDS);
@@ -70,7 +68,7 @@ public class ThreadPoolFactoryUtil {
         return threadFactoryBuilder.setDaemon(daemon).build();
     }
 
-    // TODO 参数含义是什么
+    // 出问题的时候方便调试 打印线程池
     public static void printThreadPoolStatus(ThreadPoolExecutor threadPool) {
         ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1, createThreadFactory("print-thread-pool-status", false));
         scheduledExecutorService.scheduleAtFixedRate(() -> {

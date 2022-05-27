@@ -14,9 +14,9 @@ public class RpcResponse<T> implements Serializable {
 
     private static final long serialVersionUID = 231829319729636057L;
     private String requestId;
-    // TODO 这个code是干啥的
+    // 状态码
     private Integer code;
-    // TODO meesage和data的区别是？
+    // 状态码对应的说明
     private String message;
     private T data;
 
@@ -36,7 +36,6 @@ public class RpcResponse<T> implements Serializable {
         RpcResponse<T> response = new RpcResponse<>();
         response.setCode(rpcResponseCodeEnum.getCode());
         response.setMessage(rpcResponseCodeEnum.getMessage());
-        // TODO 为什么失败 不设置requestID？
         return response;
     }
 }

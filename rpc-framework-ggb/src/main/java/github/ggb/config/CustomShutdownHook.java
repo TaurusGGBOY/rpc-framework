@@ -18,7 +18,8 @@ public class CustomShutdownHook {
 
     public void clearAll() {
         log.info("addShutdownHook for clearAll");
-        // TODO 这是啥哦……
+        // 关闭的时候清除zk注册
+        // 这样确实本地的就是zk上的
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {
                 InetSocketAddress inetSocketAddress = new InetSocketAddress(InetAddress.getLocalHost().getHostAddress(), NettyRpcServer.PORT);

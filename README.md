@@ -67,8 +67,21 @@
 + InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException 为什么是这几个错
 + publish和add啥区别？
 + 模板 T ? S
-
 - Holder是干啥的
 - ExtensionLoader是类加载器里面的第三类加载器？
 - try后面的括号：自动释放 但是为什么知道会自动的close？
 - 设置事件线程数的时候为什么是cpu数量个线程？
+- Identityhashcode
+- tailmap
+- 为什么要双亲委派
+  -  **所有的类都尽可能由顶层的类加载器加载**，**保证了加载的类的唯一性** 
+- 类卸载
+- 热替换
+- zk除了持久结点还有什么
+- 你这项目有什么改进
+- 你们字节用的什么技术
+- completeableFuture原理 为什么可以打断
+- ChannelInboundHandlerAdapter干啥的
+- 为什么用netty一定要release
+- 为什么要用到spring
+- 线程池怎么管理的

@@ -45,6 +45,7 @@ public class RpcClientProxy implements InvocationHandler {
         log.info("invoked method :[{}]", method.getName());
         RpcRequest rpcRequest = RpcRequest.builder().methodName(method.getName())
                 .parameters(args)
+                // 就是类名
                 .interfaceName(method.getDeclaringClass().getName())
                 .paramTypes(method.getParameterTypes())
                 .requestId(UUID.randomUUID().toString())
@@ -52,14 +53,16 @@ public class RpcClientProxy implements InvocationHandler {
                 .version(rpcServiceConfig.getVersion())
                 .build();
         RpcResponse<Object> rpcResponse = null;
-        if (rpcRequestTransport instanceof NettyRpcClient) {
-            CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.sendRpcRequest(rpcRequest);
-            rpcResponse = completableFuture.get();
+        if (!(rpcRequestTransport instanceof NettyRpcClient)) {
+            return null;
         }
+        CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.sendRpcRequest(rpcRequest);
+        rpcResponse = completableFuture.get();
         this.check(rpcResponse, rpcRequest);
         return rpcResponse.getData();
     }
 
+    // 简单校验 是否为空 是否id不同 是否
     private void check(RpcResponse<Object> rpcResponse, RpcRequest rpcRequest) {
         if (null == rpcResponse) {
             throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());

@@ -19,6 +19,12 @@
             <artifactId>rpc-framework-ggb</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>github.rpc</groupId>
+            <artifactId>rpc-framework-ggb</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <artifactId>example-server</artifactId>
 

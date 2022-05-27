@@ -10,8 +10,9 @@ import lombok.*;
 public class RpcMessage{
 
     private byte messageType;
-    // TODO 这俩是啥
+    // 编码器
     private byte codec;
+    // 压缩
     private byte compress;
     private int requestId;
     private Object data;

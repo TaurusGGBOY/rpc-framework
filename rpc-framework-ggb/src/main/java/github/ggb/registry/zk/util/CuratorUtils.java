@@ -53,7 +53,6 @@ public final class CuratorUtils {
     // 获取服务的子结点
     public static List<String> getChildrenNodes(CuratorFramework zkClient, String rpcSerciveName) {
         // 本地有了就不查了
-        // TODO 感觉有不一致的问题？ 这个交给后面断线部分处理？
         if (SERVICE_ADDRESS_MAP.containsKey(rpcSerciveName)) {
             return SERVICE_ADDRESS_MAP.get(rpcSerciveName);
         }
@@ -124,6 +123,7 @@ public final class CuratorUtils {
         // 创建监听做什么
         PathChildrenCacheListener pathChildrenCacheListener = (CuratorFramework, pathChildrenCacheEvent) -> {
             // 获取该路径下所有服务地址
+            // 这个地方不是追加是全获取一遍可能效率会很低
             List<String> serviceAddresses = CuratorFramework.getChildren().forPath(servicePath);
             // 放到本地
             SERVICE_ADDRESS_MAP.put(rpcServiceName, serviceAddresses);

@@ -14,7 +14,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ZkServiceRegistryImplTest {
-    // TODO 区别是啥
     @Test
     void zk_test(){
         ServiceRegistry zkServiceRegistry = new ZkServiceRegistryImpl();

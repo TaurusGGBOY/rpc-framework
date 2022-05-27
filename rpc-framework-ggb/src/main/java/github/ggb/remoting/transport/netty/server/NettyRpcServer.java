@@ -69,7 +69,6 @@ public class NettyRpcServer {
                     // 不开启nagle防止消息阻塞
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     // 心跳
-                    // TODO 这个是tcp级别的吗 怎么实现的
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     // 全连接+半连接队列的长度
                     .option(ChannelOption.SO_BACKLOG, 128)
@@ -99,7 +98,6 @@ public class NettyRpcServer {
             // 这里是要await的？
             // 开始事件循环了吗？ 没有开启事件循环
             ChannelFuture f = b.bind(host, PORT).sync();
-            // TODO 关闭？
             // f.channel是获取channel的
             // closeFuture
             // 懂了…… 监听channel的close消息

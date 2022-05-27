@@ -22,13 +22,14 @@ public class ExtensionLoader<T> {
     // 这里直接用类对象做key，然后value是它的加载器
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<>();
     // 然后类对象搞了个单例 作用还未知
+    // 如果创建了就放在这里面默认单例
     private static final Map<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<>();
     // 感觉是给每个类 都要创建一个本类 所以type是不一样的 这个影响后面的文件名
     private final Class<?> type;
     // 他是volatile的 这说明了什么呢？
-    // TODO 这个holder属实没看懂
+    // 哦哦 这个有点巧妙 就是可以存任何类型
     private final Map<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<>();
-    // TODO这个也是
+    // 这个也是 为什么不直接用Map<String, Class<?>> 感觉是可以不用的
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<>();
 
     // 上面type处说了
@@ -43,11 +44,11 @@ public class ExtensionLoader<T> {
             throw new IllegalArgumentException("Extension type should not be null.");
         }
         // 如果不是接口就报错？
-        // TODO 为什么要是接口……
+        // 因为加载的是服务 但是这个跟下面的感觉合为一个 但是 为了区分 也行
         if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type must be an interface.");
         }
-        // TODO 为什么要注解@SPI？
+        // 看SPI名字意思是什么
         if (null == type.getAnnotation(SPI.class)) {
             throw new IllegalArgumentException("Extension type must be annotated by @SPI.");
         }
@@ -55,6 +56,7 @@ public class ExtensionLoader<T> {
         ExtensionLoader<S> extensionLoader = (ExtensionLoader<S>) EXTENSION_LOADERS.get(type);
         // 如果是空 就putIfAbsent
         // 为什么不直接简写先putIfAbsent？ 再直接get就行？不用判null啊……
+        // 确实 感觉put还是有代价的 不需要直接put
         if (null == extensionLoader) {
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<>(type));
             // 这里不会有线程安全问题？在这里删了咋办 后面的get不就是null？
@@ -71,6 +73,7 @@ public class ExtensionLoader<T> {
         T instance = (T) EXTENSION_INSTANCES.get(clazz);
         if (null == instance) {
             try {
+                // 有类对象 newInstance就能创建一个对象
                 EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             } catch (Exception e) {
@@ -84,12 +87,13 @@ public class ExtensionLoader<T> {
     private Map<String, Class<?>> getExtensionClasses() {
         Map<String, Class<?>> classes = cachedClasses.get();
         // 双检测懒汉单例
-        // 为啥不用static来做…… 感觉是加载比较麻烦？必须要
         if (null == classes) {
             synchronized (cachedClasses) {
                 classes = cachedClasses.get();
                 if (null == classes) {
                     classes = new HashMap<>();
+                    // 每次都要读一次目录……
+                    // 可以热加载
                     loadDirectory(classes);
                     cachedClasses.set(classes);
                 }
@@ -100,16 +104,17 @@ public class ExtensionLoader<T> {
 
     private void loadDirectory(Map<String, Class<?>> classes) {
         // 加载本type下的所有的类？
+        // 这个type就是包名
         String fileName = ExtensionLoader.SERVICE_DIRECTORY + type.getName();
         try {
             Enumeration<URL> urls;
             // 看起来这里的加载器就是用的本类的加载器 应该是属于第三种？
-            // TODO 断点看看这个classloader的名字
             ClassLoader classLoader = ExtensionLoader.class.getClassLoader();
             // 这里是获取所有符合条件的 一个文件里面可能有多个要加载的
             urls = classLoader.getResources(fileName);
             if (null != urls) {
                 // 遍历结果
+                // 可能一个有多个文件？
                 while (urls.hasMoreElements()) {
                     URL url = urls.nextElement();
                     loadResource(classes, classLoader, url);
@@ -126,6 +131,7 @@ public class ExtensionLoader<T> {
         // 不用管理close
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), UTF_8))) {
             String line;
+            // 可能有多行 在这
             while (null != (line = reader.readLine())) {
                 // 用来当做终结符
                 final int ci = line.indexOf('#');
@@ -143,6 +149,7 @@ public class ExtensionLoader<T> {
                     String clazzName = line.substring(ei + 1).trim();
                     if (name.length() > 0 && clazzName.length() > 0) {
                         // 直接包名+类名不用指定路径就可以加载吗？
+                        // 说的是binaryname 看了下是包名+类名
                         Class<?> clazz = classLoader.loadClass(clazzName);
                         classes.put(name, clazz);
                     }
@@ -174,6 +181,7 @@ public class ExtensionLoader<T> {
             synchronized (holder) {
                 instance = holder.get();
                 if (null == instance) {
+                    // 感觉有线程安全问题啊……单例不等于线程安全
                     instance = createExtension(name);
                     holder.set(instance);
                 }

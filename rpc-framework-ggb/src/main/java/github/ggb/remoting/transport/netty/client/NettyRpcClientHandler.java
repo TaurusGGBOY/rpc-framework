@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 
+// 为什么是channelinboundhandleradapter
 @Slf4j
 public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
     private final UnprocessedRequests unprocessedRequests;
@@ -27,7 +28,6 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
         this.nettyRpcClient = SingletonFactory.getInstance(NettyRpcClient.class);
     }
 
-    // TODO
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (!(evt instanceof IdleStateEvent)) {
@@ -35,20 +35,22 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         IdleState state = ((IdleStateEvent) evt).state();
+        // 检查是否是写空闲 不是就一边呆着
         if (state != IdleState.WRITER_IDLE) {
             return;
         }
         log.info("write idle happen [{}]", ctx.channel().remoteAddress());
+
         Channel channel = nettyRpcClient.getChannel((InetSocketAddress) ctx.channel().remoteAddress());
         RpcMessage rpcMessage = new RpcMessage();
         rpcMessage.setCodec(SerializationTypeEnum.PROTOSTUFF.getCode());
         rpcMessage.setCompress(CompressTypeEnum.GZIP.getCode());
         rpcMessage.setMessageType(RpcConstants.HEARTBEAT_REQUEST_TYPE);
         rpcMessage.setData(RpcConstants.PING);
+        // 写空闲就发心跳
         channel.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
     }
 
-    // TODO
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("client catch exception:", cause);
@@ -56,7 +58,6 @@ public class NettyRpcClientHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
-    // TODO
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
        try {

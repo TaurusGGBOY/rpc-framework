@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 
+// 可以借助springbean的特性 在初始化之前公布服务
+// 初始化之后
 @Slf4j
 @Component
 public class SpringBeanPostProcessor implements BeanPostProcessor {
@@ -49,6 +51,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> targetClass = bean.getClass();
         Field[] declaredFields = targetClass.getDeclaredFields();
+        // 对每个字段都要设置个代理……有点麻烦 自定义bean
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (null == rpcReference){
@@ -58,6 +61,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
                     .group(rpcReference.group())
                     .version(rpcReference.version())
                     .build();
+            // 哦 这里要实现spring的单例+代理
             RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, rpcServiceConfig);
             Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
             declaredField.setAccessible(true);

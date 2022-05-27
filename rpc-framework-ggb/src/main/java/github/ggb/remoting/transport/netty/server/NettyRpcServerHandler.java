@@ -80,7 +80,7 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
                     RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
                     rpcMessage.setData(rpcResponse);
                 }else{
-                    // TODO 这个有问题rpc接收方也收不到啊？谁来处理失败？
+                    // 这个地方还是有问题 还是要带上requestId 这样check才能过 不是直接throw而是retry
                     RpcResponse<Object> rpcResponse = RpcResponse.fail(RpcResponseCodeEnum.FAIL);
                     rpcMessage.setData(rpcResponse);
                     log.error("not writeable now, message dropped");

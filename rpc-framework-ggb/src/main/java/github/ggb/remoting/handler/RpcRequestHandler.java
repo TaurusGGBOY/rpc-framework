@@ -20,6 +20,7 @@ public class RpcRequestHandler {
 
     public Object handle(RpcRequest rpcRequest) {
         // 首先从请求中获取service的名字
+        // 这个地方反反复复都是本地取？
         Object service = serviceProvider.getService(rpcRequest.getRpcServiceName());
         // 然后调用请求 并返回结果
         return invokeTargetMethod(rpcRequest, service);
